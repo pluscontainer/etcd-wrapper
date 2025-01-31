@@ -116,7 +116,14 @@ func (a *Application) Start() error {
 		a.logger.Error("error received on etcd Err channel", zap.Error(err))
 	}
 
-	return nil
+	snapshotContext := context.Background()
+	a.logger.Info("taking full snapshot before exiting")
+	err = a.etcdInitializer.TakeFullSnapshot(snapshotContext)
+	if err != nil {
+		a.logger.Error("failed to take full snapshot", zap.Error(err))
+	}
+
+	return err
 }
 
 // Close closes resources(e.g. etcd client) and cancels the context if not already done so.
