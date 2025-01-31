@@ -53,6 +53,8 @@ type BackupRestoreClient interface {
 	TriggerInitialization(ctx context.Context, validationType ValidationType) error
 	// GetEtcdConfig gets the etcd configuration from the backup-restore, stores it into a file and returns the path to the file.
 	GetEtcdConfig(ctx context.Context) (string, error)
+	// TakeFullSnapshot takes a full snapshot of the etcd keyspace
+	TakeFullSnapshot(ctx context.Context) error
 }
 
 // brClient implements BackupRestoreClient interface.
@@ -149,6 +151,23 @@ func (c *brClient) GetEtcdConfig(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return c.etcdConfigFilePath, nil
+}
+
+func (c *brClient) TakeFullSnapshot(ctx context.Context) error {
+	url := c.backupRestoreBaseAddress + "/snapshot/full"
+
+	response, err := c.createAndExecuteHTTPRequest(ctx, http.MethodGet, url)
+	if err != nil {
+		return err
+	}
+
+	defer util.CloseResponseBody(response)
+
+	if !util.ResponseHasOKCode(response) {
+		return fmt.Errorf("server returned error response code when attempting to trigger initialization: %v", response)
+	}
+
+	return nil
 }
 
 func (c *brClient) createAndExecuteHTTPRequest(ctx context.Context, method, url string) (*http.Response, error) {
