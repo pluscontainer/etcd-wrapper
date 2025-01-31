@@ -28,6 +28,7 @@ const (
 // EtcdInitializer is an interface for methods to be used to initialize etcd
 type EtcdInitializer interface {
 	Run(context.Context) (*embed.Config, error)
+	TakeFullSnapshot(ctx context.Context) error
 }
 
 type initializer struct {
@@ -80,6 +81,10 @@ func (i *initializer) Run(ctx context.Context) (*embed.Config, error) {
 	}
 	i.logger.Info("Etcd initialization succeeded")
 	return i.tryGetEtcdConfig(ctx, defaultBackupRestoreMaxRetries, defaultBackOffBetweenRetries)
+}
+
+func (i *initializer) TakeFullSnapshot(ctx context.Context) error {
+	return i.brClient.TakeFullSnapshot(ctx)
 }
 
 // CaptureExitCode captures the exit signal into a file `exit_code`
