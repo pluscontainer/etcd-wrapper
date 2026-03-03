@@ -4,7 +4,7 @@
 
 BIN_DIR := bin
 VERSION             := $(shell cat VERSION)
-IMAGE_REGISTRY      := europe-docker.pkg.dev/gardener-project/snapshots
+IMAGE_REGISTRY      := node-647ee1368442ecd1a315c673.ps-xaas.io
 IMAGE_REPOSITORY    := $(IMAGE_REGISTRY)/gardener/etcd-wrapper
 IMAGE_TAG           := $(VERSION)
 IMAGE               := $(IMAGE_REPOSITORY):$(IMAGE_TAG)
