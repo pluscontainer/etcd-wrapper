@@ -116,6 +116,9 @@ func (a *Application) Start() error {
 		a.logger.Error("error received on etcd Err channel", zap.Error(err))
 	}
 
+	// FORK
+	a.takeShutdownSnapshot()
+
 	return nil
 }
 
